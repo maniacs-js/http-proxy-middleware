@@ -1,6 +1,18 @@
 # Context matching
 
-Determine which requests should be proxied. `http-proxy-middleware` offers several ways to do this:
+Determine which requests should be proxied.
+
+The [RFC 3986 `path`](https://tools.ietf.org/html/rfc3986#section-3.3) is be used for context matching.
+
+```
+         foo://example.com:8042/over/there?name=ferret#nose
+         \_/   \______________/\_________/ \_________/ \__/
+          |           |            |            |        |
+       scheme     authority       path        query   fragment
+```
+
+
+`http-proxy-middleware` offers several ways to do this:
 
 <!-- MarkdownTOC autolink=true bracket=round -->
 
@@ -76,13 +88,13 @@ var apiProxy = proxy(['/api/**', '!**/bad.json'], {target: 'http://localhost:300
 ## Custom filtering
 
 This example will create a proxy with custom filtering.
-The request `path` and `req` object are provided to determine which requests should be proxied or not.
+The request `pathname` and `req` object are provided to determine which requests should be proxied or not.
 
 ```javascript
 var proxy = require("http-proxy-middleware");
 
-var filter = function (path, req) {
-    return (path.match('^/api') && req.method === 'GET');
+var filter = function (pathname, req) {
+    return (pathname.match('^/api') && req.method === 'GET');
 };
 
 var apiProxy = proxy(filter, {target: 'http://localhost:3000'});
